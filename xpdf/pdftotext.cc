@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   exitCode = 99;
-
+  //printf("B");
   // parse args
   ok = parseArgs(argDesc, &argc, argv);
   if (!ok || argc < 2 || argc > 3 || printVersion || printHelp) {
@@ -150,7 +150,7 @@ int main(int argc, char *argv[]) {
     goto err0;
   }
   fileName = new GString(argv[1]);
-
+ // printf("C");
   // read config file
   globalParams = new GlobalParams(cfgFileName);
   if (textEncName[0]) {
@@ -186,6 +186,7 @@ int main(int argc, char *argv[]) {
   } else {
     userPW = NULL;
   }
+ // printf("A");
   doc = new PDFDoc(fileName, ownerPW, userPW);
   if (userPW) {
     delete userPW;

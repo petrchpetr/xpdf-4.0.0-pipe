@@ -14,6 +14,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h> // for O_BINARY
+#include <io.h>    // for setmode
 #include <stddef.h>
 #include <string.h>
 #ifdef _WIN32
@@ -92,19 +94,26 @@ PDFDoc::PDFDoc(GString *fileNameA, GString *ownerPassword,
     return;
   }
 #else
-  if (!(file = fopen(fileName1->getCString(), "rb"))) {
-    fileName2 = fileName->copy();
-    fileName2->lowerCase();
-    if (!(file = fopen(fileName2->getCString(), "rb"))) {
-      fileName2->upperCase();
-      if (!(file = fopen(fileName2->getCString(), "rb"))) {
-	error(errIO, -1, "Couldn't open file '{0:t}'", fileName);
-	delete fileName2;
-	errCode = errOpenFile;
-	return;
-      }
-    }
-    delete fileName2;
+  //printf("FILE_NAME(%s)", fileName1->getCString());
+  if (!strcmp(fileName1->getCString(), "-")) {
+	  file = stdin;
+	  setmode(fileno(stdin), O_BINARY);
+  }
+  else {
+	  if (!(file = fopen(fileName1->getCString(), "rb"))) {
+		  fileName2 = fileName->copy();
+		  fileName2->lowerCase();
+		  if (!(file = fopen(fileName2->getCString(), "rb"))) {
+			  fileName2->upperCase();
+			  if (!(file = fopen(fileName2->getCString(), "rb"))) {
+				  error(errIO, -1, "Couldn't open file '{0:t}'", fileName);
+				  delete fileName2;
+				  errCode = errOpenFile;
+				  return;
+			  }
+		  }
+		  delete fileName2;
+	  }
   }
 #endif
 
